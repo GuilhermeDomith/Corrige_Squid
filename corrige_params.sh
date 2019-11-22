@@ -1,16 +1,11 @@
 #!/bin/bash
 
-SQUID_CONF="/etc/squid/squid.conf"
-./remove_comentarios.sh $SQUID_CONF > /tmp/squid_conf
-SQUID_CONF="/tmp/squid_conf"
+SQUID_CONF=$1
 
-#CORRIGE_CONF="./corrige_squid.conf"
-#./remover_comentarios.sh $CORRIGE_CONF > /tmp/corrige_conf
-#CORRIGE_CONF="/tmp/corrige_conf"
-
-#cat $SQUID_CONF
-
+# Obtém as configurações do gabarito
 ./obtem_config.sh PARAMETROS > /tmp/corrige_params
+
+./log.sh -table-title "PARÂMETRO"  "ERRO"
 
 while read CONF; do
 
@@ -27,13 +22,11 @@ while read CONF; do
 	fi
 
 	if [ $ENCONTRADO -eq 0 ] && [ "$VALOR" = "$VALOR_ALUNO" ]; then
-		./log.sh -c "$CONF"
+		./log.sh -certo "$(printf '%-45s %s\n' "$CONF"  "")" 
 	else
-		DEBUG=$( ([ $ENCONTRADO -eq 0 ] && echo "[VALOR INCORRETO:""$VALOR_ALUNO""]") || echo "[PARÂMETRO NAO ENCONTRADO]" )
-		./log.sh -e "$(printf '%-50s %s\n' "$CONF"  "$DEBUG")"
+		DEBUG=$( ([ $ENCONTRADO -eq 0 ] && echo "[$VALOR_ALUNO ]") || echo "[ NÃO ENCONTRADO ]" )
+		./log.sh -errado "$(printf '%-45s %s\n' "$CONF"  "$DEBUG")"
 	fi
-
-	#echo -e '\n'
 
 done < /tmp/corrige_params
 
