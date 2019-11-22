@@ -5,7 +5,7 @@ SQUID_CONF=$1
 # Obtém as configurações do gabarito
 ./obtem_config.sh IGNORAR_ACLS > /tmp/corrige_acl
 
-
+# Alterar caracteres para criar regex que será usado no sed
 # Altera os caracteres * por .*, / por \\/ no gabarito
 sed -i 's/*/.*/g' /tmp/corrige_acl
 sed -i 's#/#\\\\/#g' /tmp/corrige_acl
