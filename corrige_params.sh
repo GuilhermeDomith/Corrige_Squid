@@ -5,7 +5,7 @@ SQUID_CONF=$1
 # Obtém as configurações do gabarito
 ./obtem_config.sh PARAMETROS > /tmp/corrige_params
 
-./log.sh -table-title "PARÂMETRO"  "ERRO"
+#./log.sh -table-title "PARÂMETRO"  "ERRO"
 
 while read CONF; do
 
@@ -22,10 +22,10 @@ while read CONF; do
 	fi
 
 	if [ $ENCONTRADO -eq 0 ] && [ "$VALOR" = "$VALOR_ALUNO" ]; then
-		./log.sh -certo "$(printf '%-45s %s\n' "$CONF"  "")" 
+		./log.sh -certo "$(printf '%-48s %s\n' "$CONF" "" )" 
 	else
 		DEBUG=$( ([ $ENCONTRADO -eq 0 ] && echo "[$VALOR_ALUNO ]") || echo "[ NÃO ENCONTRADO ]" )
-		./log.sh -errado "$(printf '%-45s %s\n' "$CONF"  "$DEBUG")"
+		./log.sh -errado "$(printf '%-48s %s\n' "$CONF"  "$DEBUG")"
 	fi
 
 done < /tmp/corrige_params

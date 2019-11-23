@@ -23,9 +23,9 @@ done < /tmp/corrige_acl
 
 
 # Exibe apenas as ACL's importantes do aluno
-./log.sh -table-title "ACL'S DO ALUNO"
+#./log.sh -table-title "ACL'S DO ALUNO"
 while read ACL; do
-	printf '\t%-2s %-45s\n' "|" "$ACL"
+	printf ' %-2s %-45s\n' "|" "$ACL"
 done < /tmp/squid_acls
 
 exit 0

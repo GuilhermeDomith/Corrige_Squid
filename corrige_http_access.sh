@@ -11,21 +11,21 @@ sed -i 's/*/.*/g' /tmp/corrige_http_access
 sed -i 's#/#\\\\/#g' /tmp/corrige_http_access
 
 
-# Obtém apenas ACL's do aluno
+# Obtém apenas HTTP_ACCESS do aluno
 grep "http_access" $SQUID_CONF > /tmp/squid_http_access
 
 
-# Remove todas as ACL's do aluno que devem ser ignoradas, 
+# Remove todas as HTTP_ACCESS do aluno que devem ser ignoradas, 
 # de acordo com o gabarito.
-while read ACL_IGNORE; do
-        sed -i "/${ACL_IGNORE}$/d" /tmp/squid_http_access
+while read HTTP_ACCESS_IGNORE; do
+        sed -i "/${HTTP_ACCESS_IGNORE}$/d" /tmp/squid_http_access
 done < /tmp/corrige_http_access
 
 
-# Exibe apenas as ACL's importantes do aluno
-./log.sh -table-title "HTTP ACCESS DO ALUNO"
-while read ACL; do
-        printf '\t%-2s %-45s\n' "|" "$ACL"
+# Exibe apenas as HTTP_ACCESS importantes do aluno
+#./log.sh -table-title "HTTP ACCESS DO ALUNO"
+while read HTTP_ACCESS; do
+        printf ' %-2s %-45s\n' "|" "$HTTP_ACCESS"
 done < /tmp/squid_http_access
 
 exit 0
