@@ -5,11 +5,12 @@ echo "0" > /tmp/pontos_squid
 
 ./log.sh -title "CNC"
 ./corrige_cnc.sh
+CNC=$?
 
 TIME='1s'
 sleep $TIME
 
-if [ $? -eq 0 ]; then
+if [ $CNC -eq 0 ]; then
 	SQUID_CONF="/etc/squid/squid.conf"
 
 	# Remover comentários do arquivo

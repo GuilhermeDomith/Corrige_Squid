@@ -7,7 +7,7 @@ ISACTIVE=$?
 if [ $ISACTIVE -eq 4 ]
 then
 	./log.sh -errado 'squid.service não foi encontrado'
-	exit $ISACTIVE
+	exit 1
 
 # Se não estiver ativado inicia o serviço
 elif [ $ISACTIVE -ne 0 ]
@@ -21,7 +21,8 @@ fi
 # Verifica se o squid foi iniciado, mesmo que manualmente
 if [ $ISACTIVE -ne 0 ]
 then
-	./log.sh -errado 'squid.service não pôde ser ativado'
+	./log.sh -errado 'squid.service não pôde ser iniciado'
+	exit 1
 else
 	./log.sh -certo 'squid.service está ativo'
 fi
@@ -31,7 +32,7 @@ fi
 [ $(systemctl list-unit-files | grep squid.service | awk '{print $2}') =  'enabled' ]
 [ $? -ne 0 ] && ./log.sh -info 'squid.service nao está habilitado para iniciar com o sistema!'
 
-exit $ISACTIVE
+exit 0
 
 
 
