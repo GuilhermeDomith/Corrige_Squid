@@ -26,10 +26,10 @@ while read CONF; do
 
 
 	if [ $ENCONTRADO -eq 0 ] && [ "$VALOR" = "$VALOR_ALUNO" ]; then
-		./log.sh -certo "$(printf '%-48s %s\n' "$CONF" "" )" 
+		./log.sh -certo "$(printf '%-50s %s\n' "$CONF" "" )" 
 	else
 		DEBUG=$( ([ $ENCONTRADO -eq 0 ] && echo "[$VALOR_ALUNO ]") || echo "[ NÃO ENCONTRADO ]" )
-		./log.sh -errado "$(printf '%-48s %s\n' "$CONF"  "$DEBUG")"
+		./log.sh -errado "$(printf '%-50s %s\n' "$CONF"  "$DEBUG")"
 		PONTO=0
 	fi
 
@@ -37,7 +37,8 @@ while read CONF; do
 
 done < /tmp/corrige_params
 
-./log.sh -title "$(echo "SOMA:" $PONTOS "Pts")"
+./log.sh -bold "\n SOMA: $PONTOS Pts"
+echo $PONTOS >> /tmp/pontos_squid
 
 exit 0
 

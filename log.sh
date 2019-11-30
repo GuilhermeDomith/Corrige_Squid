@@ -15,13 +15,13 @@ case $1 in
 	;;
 
 	"-t"|"-title")
-		printf "\n###%2s \e[1m%-46s\e[0m \e[1m%-20s\e[0m \e[1m%-10s\e[0m\n\n" "" "$2" "$3" "$4"
+		printf "\n###%2s \e[1m%-49s\e[0m \e[1m%-20s\e[0m \e[1m%-10s\e[0m\n\n" "" "$2" "$3" "$4"
 	;;
-	"-tt"|"-table-title")
-		printf "%-2s \e[1m%-46s\e[0m \e[1m%-10s\e[0m \e[1m%-10s\e[0m\n" "" "$2" "$3" "$4"
+	"-b"|"-bold")
+		printf "\e[1m$2\e[0m\n"
 	;;
-	* ) echo "Opção inválida!"
-
+	* ) 
+		echo "$2"
 	;;
 
 esac

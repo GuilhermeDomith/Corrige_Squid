@@ -15,17 +15,19 @@ PONTOS=0
 while read CONF_USUARIO; do
 
 	PONTO=$(echo $CONF_USUARIO | awk -F")" '{print $1}' | sed -e "s/[^0-9\.]//g")
-        USUARIO=$(echo $CONF_USUARIO | awk -F")" '{print $2}')
+        USUARIO=$(echo $CONF_USUARIO | awk -F")" '{print $2}'| awk '{print $1}')
 	
-	echo $PONTO '|'
-	echo $USUARIO '|'
+#echo $PONTO '|'
+#echo $USUARIO '|'
+	ACL_SEARCH=$(echo -e "acl .* proxy_auth $USUARIO")
+#echo "$ACL_SEARCH" '|'
 
-	ACL_USUARIO=$(cat /tmp/squid_acls | sed -n "$(echo -e "/acl .* proxy_auth $USUARIO/p")")
-	echo $ACL_USUARIO '|'
+	ACL_USUARIO=$(cat /tmp/squid_acls | sed -n "/$ACL_SEARCH/p")
+#echo $ACL_USUARIO '|'
 	ACL_USUARIO=$(echo $ACL_USUARIO | awk '{print $2}')
 
 	if [ -z $ACL_USUARIO ]; then
-		./log.sh -errado "$(printf '%-48s %-20s %-10s\n' "$CONF_USUARIO" "" "")"
+		./log.sh -errado "$(printf '%-50s %-20s %-10s\n' "$CONF_USUARIO" "" "")"
 		PONTO=0
 	else
 		grep $ACL_USUARIO /tmp/squid_http_access &> /dev/null
@@ -33,9 +35,9 @@ while read CONF_USUARIO; do
 
 
 		if [ $HTTP_ACCESS_USUARIO -eq 0 ]; then
-			./log.sh -certo "$(printf '%-48s %-20s %-10s\n' "$CONF_USUARIO" "[ $ACL_USUARIO ]" "[ CRIADO ]")"
+			./log.sh -certo "$(printf '%-50s %-20s %-10s\n' "$CONF_USUARIO" "[ $ACL_USUARIO ]" "[ CRIADO ]")"
 		else
-			./log.sh -errado "$(printf '%-48s %-20s %-10s\n' "$CONF_USUARIO" "[ $ACL_USUARIO ]" "")"
+			./log.sh -errado "$(printf '%-50s %-20s %-10s\n' "$CONF_USUARIO" "[ $ACL_USUARIO ]" "")"
 			PONTO=0
 		fi
 	fi
@@ -43,5 +45,7 @@ while read CONF_USUARIO; do
 	PONTOS=$(($PONTOS + $PONTO))
 done < /tmp/corrige_usuarios
 
-./log.sh -title "$(echo "SOMA:" $PONTOS "Pts")"
+./log.sh -bold "\n SOMA: $PONTOS Pts"
+echo $PONTOS >> /tmp/pontos_squid
 
+exit 0
