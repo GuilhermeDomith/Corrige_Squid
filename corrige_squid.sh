@@ -27,6 +27,10 @@ if [ $CNC -eq 0 ]; then
         ./corrige_usuarios.sh $SQUID_CONF
 	sleep $TIME
 
+	./log.sh -title "OUTROS"
+	./corrige_yum.sh
+	sleep $TIME
+
 	 # Corrigir ACL's
         ./log.sh -title "ACL'S DO ALUNO"
         ./corrige_acl.sh $SQUID_CONF
