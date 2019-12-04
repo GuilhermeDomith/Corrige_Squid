@@ -2,7 +2,7 @@
 
 IP=127.0.0.1
 PORT=8080
-PONTO=2
+PONTOS=0
 
 rpm -q sshpass
 [ $? -ne 0 ] && yum -y install sshpass
@@ -11,9 +11,12 @@ rpm -q sshpass
 
 if [ $? -eq 0 ]; then
 	./log.sh -certo "Proxy configurado no yum."
-	echo $PONTO >> /tmp/pontos_squid
+	PONTOS=2
 else
 	./log.sh -errado "Proxy não configurado no yum."
 fi
+
+./log.sh -bold "\n SOMA: $PONTOS Pts"
+echo $PONTOS >> /tmp/pontos_squid
 
 exit 0
