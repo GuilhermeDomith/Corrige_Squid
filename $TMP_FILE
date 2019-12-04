@@ -1,4 +1,0 @@
-	(4 pts) reply_body_max_size 30 MB
-	(3 pts) cache_mem 95 MB
-	(3 pts) maximum_object_size 254 MB
-	(2 pts) cache_dir ufs /var/spool/squid 100 16 256
