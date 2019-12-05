@@ -11,10 +11,12 @@ PONTOS=0
 
 while read CONF; do
 
-	PONTO=$(echo $CONF | awk -F")" '{print $1}' | sed -e "s/[^0-9\.]//g") 
-	PARAM=$(echo $CONF | awk -F")" '{first = $1; $1 = ""; print $0}' | awk '{print $2}')
+	PONTO=$(echo $CONF | awk -F")" '{print $1}' | sed -e "s/[^0-9\.]//g")
+       	CONFIG=$(echo $CONF | awk -F")" '{first = $1; $1 = ""; print $0}' | cut -d' ' -f1-)
+
+	PARAM=$(echo $CONFIG | awk '{print $1}')
 	# Obtém o valor do parametro, mesmo que seja mais de um
-	VALOR=$(echo $CONF | awk -F")" '{first = $1; $1 = ""; print $0}' | awk '{first = $1; $1 = ""; print $0}')
+	VALOR=$(echo $CONFIG | awk '{first = $1; $1 = ""; print $0}' | cut -d' ' -f1- )
 	
 	CONF_ALUNO=$(cat $SQUID_CONF | grep $PARAM)
 	ENCONTRADO=$?
@@ -24,7 +26,9 @@ while read CONF; do
 		VALOR_ALUNO=$(echo $CONF_ALUNO | awk '{first = $1; $1 = ""; print $0}')
 	fi
 
+	#echo "|$PARAM|" "|$VALOR|" "|$CONF_ALUNO|" "|$VALOR_ALUNO|"
 
+	
 	if [ $ENCONTRADO -eq 0 ] && [ "$VALOR" = "$VALOR_ALUNO" ]; then
 		./log.sh -certo "$(printf '%-50s %s\n' "$CONF" "" )" 
 	else
