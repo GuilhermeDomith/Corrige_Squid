@@ -63,3 +63,5 @@ done < /tmp/pontos_squid
 
 ./log.sh -bold "\n TOTAL: $TOTAL Pts\n"
 
+exit 0
+

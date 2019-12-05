@@ -23,29 +23,47 @@ if [ -z $HOST_PROXY ] || [ -z $HOST_SERV ]; then
 	 exit 1
 fi
 
-PASSWD_ROOT_PROXY=$(./obtem_config.sh GLOBAL_CONFIG -p root_password | awk '{print $2}')
-PASSWD_ROOT_SERV=$(./obtem_config.sh YUM_PROXY -p root_password | awk '{print $2}')
+ping -c5 $HOST_PROXY &> /dev/null
+if [ $? -eq 0 ]; then
 
-# Obtém a porta do SSH que deve ser configurada ou a porta padrão
-SSH_PORT=$(./obtem_config.sh GLOBAL_CONFIG -p ssh_port | awk '{print $2}' )
-SSH_PORT=$( ([ -z $SSH_PORT ] && echo 22 ) || echo $SSH_PORT)
+	PASSWD_ROOT_PROXY=$(./obtem_config.sh GLOBAL_CONFIG -p root_password | awk '{print $2}')
+	PASSWD_ROOT_SERV=$(./obtem_config.sh YUM_PROXY -p root_password | awk '{print $2}')
 
-PATH_SCRIPTS=$(pwd)
-PATH_DIR_REMOTO=$(echo "~/$(pwd | awk -F"/" '{print $NF}')")
+	# Obtém a porta do SSH que deve ser configurada ou a porta padrão
+	SSH_PORT=$(./obtem_config.sh GLOBAL_CONFIG -p ssh_port | awk '{print $2}' )
+	SSH_PORT=$( ([ -z $SSH_PORT ] && echo 22 ) || echo $SSH_PORT)
 
-./log.sh -i "Copiando arquivos para $HOST_PROXY..."
+	PATH_SCRIPTS=$(pwd)
+	PATH_DIR_REMOTO=$(echo "~/$(pwd | awk -F"/" '{print $NF}')")
 
-# Copia os scripts para o sevidor proxy
-sshpass -p $PASSWD_ROOT_PROXY scp \
-	-P $SSH_PORT \
-	-o "StrictHostKeyChecking no" \
-	-r $PATH_SCRIPTS \
-	root@$HOST_PROXY:~/
+	./log.sh -i "Copiando arquivos para $HOST_PROXY..."
+	
+	# Copia os scripts para o sevidor proxy
+	sshpass -p $PASSWD_ROOT_PROXY scp \
+		-P $SSH_PORT \
+		-o "StrictHostKeyChecking no" \
+		-o "ConnectTimeout=5" \
+		-r $PATH_SCRIPTS \
+		root@$HOST_PROXY:~/ &> /dev/null
 
-# Realiza acesso remoto e executa o script para iniciar a correção
-sshpass -p $PASSWD_ROOT_PROXY ssh \
-	-p $SSH_PORT \
-	-o "StrictHostKeyChecking no" \
-	root@$HOST_PROXY \
-	-t "cd $PATH_DIR_REMOTO; ./corrige_squid.sh $HOST_PROXY $HOST_SERV $PASSWD_ROOT_SERV; /bin/bash"
+	[ $? -ne 0 ] && ./log.sh -errado "Não foi possível acessar $HOST_PROXY" && exit 1
+
+	# Realiza acesso remoto e executa o script para iniciar a correção
+	sshpass -p $PASSWD_ROOT_PROXY ssh \
+		-p $SSH_PORT \
+		-o "StrictHostKeyChecking no" \
+		-o "ConnectTimeout=5" \
+		root@$HOST_PROXY \
+		-t "cd $PATH_DIR_REMOTO; ./corrige_squid.sh $HOST_PROXY $HOST_SERV $PASSWD_ROOT_SERV; /bin/bash" 2> /dev/null
+	
+	[ $? -eq 255 ] && ./log.sh -errado "Não foi possível acessar $HOST_PROXY" && exit 1
+
+else
+
+	./log.sh -errado "O servidor $HOST_PROXY está insdisponível."
+	exit 1
+
+fi
+
+exit 0
 
